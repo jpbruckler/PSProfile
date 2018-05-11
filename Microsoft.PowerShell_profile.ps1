@@ -27,7 +27,7 @@ foreach ($Path in $PathsToAdd) {
 
 # Some of my machines for some reason have a messed up PSModulePath, this will fix it.
 $UserModulePath = (Join-Path $env:USERPROFILE 'Documents\WindowsPowerShell\Modules')
-if (($env:PSModulePath -split ';') -notcontains $UserModulePath {
+if (($env:PSModulePath -split ';') -notcontains $UserModulePath) {
     $env:PSModulePath   = '{0};{1}' -f $env:PSModulePath, $UserModulePath
 }
 
