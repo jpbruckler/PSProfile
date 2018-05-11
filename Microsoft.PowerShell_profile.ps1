@@ -8,25 +8,28 @@ $here               = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProfilePath        = Split-Path $Profile -Parent
 
 # Path manipulation
-$NmapDir            = (Join-Path ${env:ProgramFiles(x86)} 'nmap')
-$MongoDir           = (Join-Path $env:ProgramFiles 'MongoDB\Server\3.4\bin')
-$BcompDir           = (Join-Path $env:ProgramFiles 'Beyond Compare 3')
-$env:PSModulePath   = '{0};{1}' -f $env:PSModulePath, (Join-Path $env:USERPROFILE 'Documents\WindowsPowerShell\Modules')
-$env:Path           = '{0};{1};{2}' -f $env:Path, (Join-Path $env:ProgramFiles 'Microsoft VS Code'), (Join-Path $env:LOCALAPPDATA 'Programs\Git\bin')
-
-if (Test-Path $NmapDir -ErrorAction SilentlyContinue) {
-  $env:Path         = '{0};{1}' -f $env:Path, $NmapDir
+# Add paths to the array to add paths to the.. to the path...
+$PathsToAdd = @(
+    (Join-Path ${env:ProgramFiles(x86)} 'nmap')             # Nmap
+    (Join-Path $env:ProgramFiles 'MongoDB\Server\3.4\bin')  # Mongo
+    (Join-Path $env:ProgramFiles 'Beyond Compare 3')        # BeyondCompare
+    (Join-Path $env:ProgramFiles 'Sysinternals')            # SysInternals Tools
+    (Join-Path $env:ProgramFiles 'Microsoft VS Code')       # VS Code
+    (Join-Path $env:LOCALAPPDATA 'Programs\Git\cmd')        # git
+)
+foreach ($Path in $PathsToAdd) {
+    $NotInPath  = $env:Path -split ';' -notcontains $Path
+    $TestPath   = Test-Path $Path -ErrorAction SilentlyContinue
+    if ($NotInPath -and $TestPath) {
+        $env:Path = '{0};{1}' -f $env:Path, $Path
+    }
 }
 
-if (Test-Path $MongoDir -ErrorAction SilentlyContinue) {
-  $env:Path         = '{0};{1}' -f $env:Path, $MongoDir
+# Some of my machines for some reason have a messed up PSModulePath, this will fix it.
+$UserModulePath = (Join-Path $env:USERPROFILE 'Documents\WindowsPowerShell\Modules')
+if (($env:PSModulePath -split ';') -notcontains $UserModulePath {
+    $env:PSModulePath   = '{0};{1}' -f $env:PSModulePath, $UserModulePath
 }
-
-if (Test-Path $BcompDir -ErrorAction SilentlyContinue) {
-  $env:Path         = '{0};{1}' -f $env:Path, $BcompDir
-}
-
-Add-Type -AssemblyName System.Web
 
 # Aliases
 Set-Alias -Name scp -Value $((Join-Path ${env:ProgramFiles(x86)} 'Centrify\Centrify PuTTY\pscp.exe' ) )
@@ -96,11 +99,15 @@ function Open-MITRE
 function Set-HttpProxy
 {
     param(
-        [string] $ProxyServer = 'cmsproxy.ce.corp.com',
+        [Parameter( Mandatory )]
+        [string] $ProxyServer,
         [int] $Port = 8080,
-        [switch] $SetHTTPS,
         [System.Management.Automation.PSCredential] $Credential
     )
+    
+    begin {
+        Add-Type -AssemblyName System.Web
+    }
   
     process { 
         if ($Credential) {
@@ -114,18 +121,19 @@ function Set-HttpProxy
             $ProxyString = 'http://{0}:{1}' -f $ProxyServer,$Port
         }
         
-        $env:HTTP_PROXY = $ProxyString
-  
-        if ($SetHTTPS) {
-            $env:HTTPS_PROXY = $ProxyString
-        }
+        $env:HTTP_PROXY     = $ProxyString
+        $env:HTTPS_PROXY    = $ProxyString
+        $env:http_proxy     = $ProxyString
+        $env:https_proxy    = $ProxyString
     }
 }
 
 function Clear-HttpProxy
 {
-  $env:HTTP_PROXY = $null
-  $env:HTTPS_PROXY = $null
+  $env:HTTP_PROXY   = $null
+  $env:HTTPS_PROXY  = $null
+  $env:http_proxy   = $null
+  $env:https_proxy  = $null
 }
 
 function ConvertTo-Base64
@@ -205,21 +213,6 @@ function Start-IronKey
 }
 Set-Alias -Name sik -Value Start-IronKey
 
-function Start-NotepadPP
-{
-    param($Path)
-
-    if ($Path)
-    { 
-        start-process (Join-Path ${env:ProgramFiles(x86)} 'Notepad++\notepad++.exe') -ArgumentList $Path
-    }
-    else
-    {
-        start-process (Join-Path ${env:ProgramFiles(x86)} 'Notepad++\notepad++.exe')
-    }
-}
-Set-Alias -Name npp -Value Start-NotepadPP
-
 function Get-TinyUrl
 {
     param(
@@ -230,11 +223,6 @@ function Get-TinyUrl
     $TinyURL = "http://tinyurl.com/api-create.php?url=$URL"
     $WebClient = New-Object System.Net.WebClient
     $WebClient.DownloadString($TinyURL)
-}
-
-function Add-ARSSnapin
-{
-    Add-PSSnapin Quest.ActiveRoles.ADManagement
 }
 
 function Get-FileHash
@@ -385,9 +373,4 @@ Function Compare-GPOSettings
         }
 
     }
-}
-# Chocolatey profile
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
 }
