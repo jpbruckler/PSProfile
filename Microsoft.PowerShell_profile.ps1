@@ -4,8 +4,8 @@ if (-not (Test-Path gh:\)) {
 }
 
 # Variables
-$here               = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ProfilePath        = Split-Path $Profile -Parent
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProfilePath = Split-Path $Profile -Parent
 
 # Path manipulation
 # Add paths to the array to add paths to the.. to the path...
@@ -18,8 +18,8 @@ $PathsToAdd = @(
     (Join-Path $env:LOCALAPPDATA 'Programs\Git\cmd')        # git
 )
 foreach ($Path in $PathsToAdd) {
-    $NotInPath  = $env:Path -split ';' -notcontains $Path
-    $TestPath   = Test-Path $Path -ErrorAction SilentlyContinue
+    $NotInPath = $env:Path -split ';' -notcontains $Path
+    $TestPath = Test-Path $Path -ErrorAction SilentlyContinue
     if ($NotInPath -and $TestPath) {
         $env:Path = '{0};{1}' -f $env:Path, $Path
     }
@@ -28,7 +28,7 @@ foreach ($Path in $PathsToAdd) {
 # Some of my machines for some reason have a messed up PSModulePath, this will fix it.
 $UserModulePath = (Join-Path $env:USERPROFILE 'Documents\WindowsPowerShell\Modules')
 if (($env:PSModulePath -split ';') -notcontains $UserModulePath) {
-    $env:PSModulePath   = '{0};{1}' -f $env:PSModulePath, $UserModulePath
+    $env:PSModulePath = '{0};{1}' -f $env:PSModulePath, $UserModulePath
 }
 
 # Aliases
@@ -41,8 +41,7 @@ Import-Module posh-git
 function src { & $Profile }
 function which($name) { Get-Command $name | Select-Object Definition }
 function touch($file) { "" | Out-File $file -Encoding ASCII }
-function Find-MSDN
-{
+function Find-MSDN {
     param([string] $SearchTerm)
 
     process { 
@@ -51,8 +50,7 @@ function Find-MSDN
     }
 }
 
-function Open-MITRE 
-{
+function Open-MITRE {
     <#
     .SYNOPSIS
         Opens MITRE ATT&CK wiki page for the given T code in the default browser.
@@ -81,7 +79,7 @@ function Open-MITRE
     #>
     param(
         [Parameter( Mandatory,
-                    ValueFromPipeline )]    
+            ValueFromPipeline )]    
         [Alias('TCode')]
         [string] $TechniqueCode
     )
@@ -96,79 +94,85 @@ function Open-MITRE
     }
 }
 
-function Set-HttpProxy
-{
+function Set-HttpProxy {
     param(
-        [Parameter( Mandatory )]
-        [string] $ProxyServer,
+        [string] $ProxyServer = 'cmsproxy.ce.corp.com',
         [int] $Port = 8080,
+        [switch] $SetHTTPS,
+        [switch] $SetGitConfig,
         [System.Management.Automation.PSCredential] $Credential
     )
-    
-    begin {
-        Add-Type -AssemblyName System.Web
-    }
   
     process { 
         if ($Credential) {
             $UserName = $Credential.GetNetworkCredential().UserName
-            $Password = [System.Web.HttpUtility]::UrlEncode($Credential.GetNetworkCredential().Password)
-            $ProxyString = 'http://{0}:{1}@{2}:{3}' -f $UserName,$Password,$ProxyServer,$Port
+            $Password = ([System.Web.HttpUtility]::UrlEncode($Credential.GetNetworkCredential().Password) -replace '\.', '%2E')
+            $ProxyString = 'http://{0}:{1}@{2}:{3}' -f $UserName, $Password, $ProxyServer, $Port
 
             $UserName, $Password = $null
         }
         else {
-            $ProxyString = 'http://{0}:{1}' -f $ProxyServer,$Port
+            $ProxyString = 'http://{0}:{1}' -f $ProxyServer, $Port
         }
         
-        $env:HTTP_PROXY     = $ProxyString
-        $env:HTTPS_PROXY    = $ProxyString
-        $env:http_proxy     = $ProxyString
-        $env:https_proxy    = $ProxyString
+        $env:HTTP_PROXY = $ProxyString
+  
+        if ($SetHTTPS) {
+            $env:HTTPS_PROXY = $ProxyString
+        }
+        if ($SetGitConfig) {
+            git config --global http.proxy $ProxyString
+            git config --global https.proxy $ProxyString
+        }
     }
 }
 
-function Clear-HttpProxy
-{
-  $env:HTTP_PROXY   = $null
-  $env:HTTPS_PROXY  = $null
-  $env:http_proxy   = $null
-  $env:https_proxy  = $null
+
+function Clear-HttpProxy {
+    param(
+        [switch] $ClearGit
+    )
+    $env:HTTP_PROXY = $null
+    $env:HTTPS_PROXY = $null
+    $env:http_proxy = $null
+    $env:https_proxy = $null
+
+    if ($ClearGit) {
+        git config --global --unset http.proxy
+        git config --global --unset https.proxy
+    }
 }
 
-function ConvertTo-Base64
-{
-  param( 
-    [Parameter( Mandatory,
-                ValueFromPipeline )]
-    [string[]] $String
-  )
+function ConvertTo-Base64 {
+    param( 
+        [Parameter( Mandatory,
+            ValueFromPipeline )]
+        [string[]] $String
+    )
   
-  process {
-    $Bytes  = [System.Text.Encoding]::Unicode.GetBytes($String)
-    $Output = [System.Convert]::ToBase64String($Bytes)
-    Write-Output $Output
-  }
+    process {
+        $Bytes = [System.Text.Encoding]::Unicode.GetBytes($String)
+        $Output = [System.Convert]::ToBase64String($Bytes)
+        Write-Output $Output
+    }
 }
 
-function ConvertFrom-Base64
-{
-  param( 
-    [Parameter( Mandatory,
-                ValueFromPipeline )]
-    [Alias('String','Base64')]
-    [string[]] $Base64String
-  )
+function ConvertFrom-Base64 {
+    param( 
+        [Parameter( Mandatory,
+            ValueFromPipeline )]
+        [Alias('String', 'Base64')]
+        [string[]] $Base64String
+    )
   
-  process {
-    $Bytes = [System.Convert]::FromBase64String($Base64String)
-    $Output = [System.Text.Encoding]::Unicode.GetString($Bytes)
-    Write-Output $Output    
-  }
+    process {
+        $Bytes = [System.Convert]::FromBase64String($Base64String)
+        $Output = [System.Text.Encoding]::Unicode.GetString($Bytes)
+        Write-Output $Output    
+    }
 }
 
-function Start-TestShell
-{
+function Start-TestShell {
     param( 
         [string] $TargetDir = $PWD
     )
@@ -185,8 +189,7 @@ function Start-TestShell
 }
 Set-Alias -Name sts -Value Start-TestShell
 
-function Start-IronKey
-{
+function Start-IronKey {
     [CmdletBinding()]
     param( [switch] $LaunchAll)
     
@@ -195,14 +198,12 @@ function Start-IronKey
         # is mounted as a CD.
         $Drives = Get-WmiObject Win32_LogicalDisk -Filter DriveType=5
 
-        foreach ($Drive in $Drives)
-        {
+        foreach ($Drive in $Drives) {
             $IKeyPath = (Join-Path $Drive.DeviceID 'IronKey.exe')
 
             Write-Verbose ('Checking drive {0} for IronKey.exe.' -f $Drive.DeviceID)
 
-            if ((Resolve-Path $IKeyPath -ErrorAction SilentlyContinue))
-            {
+            if ((Resolve-Path $IKeyPath -ErrorAction SilentlyContinue)) {
                 Write-Verbose ('IronKey.exe found on drive {0}. Launching.' -f $Drive.DeviceID)
                 Start-Process $IKeyPath
 
@@ -213,10 +214,9 @@ function Start-IronKey
 }
 Set-Alias -Name sik -Value Start-IronKey
 
-function Get-TinyUrl
-{
+function Get-TinyUrl {
     param(
-        [Parameter(Mandatory=$true,Position=0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [string] $URL
     )
 
@@ -225,39 +225,34 @@ function Get-TinyUrl
     $WebClient.DownloadString($TinyURL)
 }
 
-function Get-FileHash
-{
+function Get-FileHash {
     param(
-        [Parameter(Mandatory=$true,
-                    ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true,
+            ValueFromPipeline = $true)]
         [string] $FilePath,
         
-        [ValidateSet('MD5','RIPEMD160','SHA1','SHA256','SHA384','SHA512')]
+        [ValidateSet('MD5', 'RIPEMD160', 'SHA1', 'SHA256', 'SHA384', 'SHA512')]
         [string] $Algorithm = 'SHA1'
     )
 
-    begin
-    {
+    begin {
         $Crypt = [Security.Cryptography.HashAlgorithm]::Create($Algorithm)
     }
 
-    process
-    {
-        if ([System.IO.File]::Exists($FilePath))
-        {
+    process {
+        if ([System.IO.File]::Exists($FilePath)) {
             $Stream = [IO.File]::OpenRead($FilePath)
             [string] $hash = $Crypt.ComputeHash($Stream) | ForEach-Object { '{0:x2}' -f $_ }
             $Stream.Close()
             $Output = [PSCustomObject] @{ 
-                        'FilePath' = $FilePath
-                        'FileName' = (Split-Path $FilePath -Leaf)
-                        'Hash' = ($hash -replace ' ','') 
-                        'Algorithm' = $Algorithm
-                      }
+                'FilePath'  = $FilePath
+                'FileName'  = (Split-Path $FilePath -Leaf)
+                'Hash'      = ($hash -replace ' ', '') 
+                'Algorithm' = $Algorithm
+            }
             $Output
         }
-        else
-        {
+        else {
             $Message = "The given file path '$FilePath' is not a valid file or directory."
             $Exception = New-Object InvalidOperationException $Message
             $ErrorID = 'FileIsMissingOrEmpty'
@@ -269,34 +264,29 @@ function Get-FileHash
     }
 }
 
-function Compare-FileHash
-{
+function Compare-FileHash {
     param(
-        [Parameter(Mandatory=$true,
-                    ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true,
+            ValueFromPipeline = $true)]
         [string] $FilePath,
         
-        [ValidateSet('MD5','RIPEMD160','SHA1','SHA256','SHA384','SHA512')]
+        [ValidateSet('MD5', 'RIPEMD160', 'SHA1', 'SHA256', 'SHA384', 'SHA512')]
         [string] $Algorithm = 'SHA1',
         [string] $CheckSum
     )
 
-    begin
-    {
+    begin {
         $Crypt = [Security.Cryptography.HashAlgorithm]::Create($Algorithm)
     }
 
-    process
-    {
-        if (Test-Path $FilePath)
-        {
+    process {
+        if (Test-Path $FilePath) {
             $Stream = [IO.File]::OpenRead($FilePath)
             [string] $hash = $Crypt.ComputeHash($Stream) | ForEach-Object { '{0:x2}' -f $_ }
             $Stream.Close()
-            $FileHash = ($hash -replace ' ','')
+            $FileHash = ($hash -replace ' ', '')
         }
-        else
-        {
+        else {
             $Message = "The given file path '$FilePath' is not a valid file or directory."
             $Exception = New-Object InvalidOperationException $Message
             $ErrorID = 'FileIsMissingOrEmpty'
@@ -310,8 +300,7 @@ function Compare-FileHash
     }
 }
 
-Function Compare-GPOSettings
-{
+Function Compare-GPOSettings {
     param(
         [Parameter( Mandatory )]
         [string] $ReferenceGPOName,
@@ -337,11 +326,11 @@ Function Compare-GPOSettings
             $RefGPO = Get-GPO -Name $ReferenceGPOName
             $DifGPO = Get-GPO -Name $DifferenceGPOName
 
-            $RefXMLFile = ('{0}\{1}.xml' -f $env:TEMP,$ReferenceGPOName)
-            $DifXMLFile = ('{0}\{1}.xml' -f $env:TEMP,$DifferenceGPOName)
+            $RefXMLFile = ('{0}\{1}.xml' -f $env:TEMP, $ReferenceGPOName)
+            $DifXMLFile = ('{0}\{1}.xml' -f $env:TEMP, $DifferenceGPOName)
 
-            $null = $RefGPO.GenerateReportToFile('xml',$RefXMLFile)
-            $null = $DifGPO.GenerateReportToFile('xml',$DifXMLFile)
+            $null = $RefGPO.GenerateReportToFile('xml', $RefXMLFile)
+            $null = $DifGPO.GenerateReportToFile('xml', $DifXMLFile)
 
             [xml] $RefGPOXml = Get-Content $RefXMLFile
             [xml] $DifGPOXml = Get-Content $DifXMLFile
@@ -349,8 +338,8 @@ Function Compare-GPOSettings
             switch ($Computer) {
                 $true {
                     $ComputerCompareObjParams = @{
-                        ReferenceObject  = ($RefGPOXml.gpo.Computer.ExtensionData.extension.ChildNodes | Select-Object Name,State)
-                        DifferenceObject = ($DifGPOXml.gpo.Computer.ExtensionData.extension.ChildNodes | Select-Object Name,State)
+                        ReferenceObject  = ($RefGPOXml.gpo.Computer.ExtensionData.extension.ChildNodes | Select-Object Name, State)
+                        DifferenceObject = ($DifGPOXml.gpo.Computer.ExtensionData.extension.ChildNodes | Select-Object Name, State)
                         IncludeEqual     = $true
                         Property         = 'Name'
                     }
@@ -359,8 +348,8 @@ Function Compare-GPOSettings
                 
                 $false {
                     $UserCompareObjParams = @{
-                        ReferenceObject  = ($RefGPOXml.gpo.User.ExtensionData.extension.ChildNodes | Select-Object Name,State)
-                        DifferenceObject = ($DifGPOXml.gpo.User.ExtensionData.extension.ChildNodes | Select-Object Name,State)
+                        ReferenceObject  = ($RefGPOXml.gpo.User.ExtensionData.extension.ChildNodes | Select-Object Name, State)
+                        DifferenceObject = ($DifGPOXml.gpo.User.ExtensionData.extension.ChildNodes | Select-Object Name, State)
                         IncludeEqual     = $true
                         Property         = 'Name'
                     }
