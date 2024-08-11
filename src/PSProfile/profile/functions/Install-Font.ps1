@@ -34,9 +34,17 @@ function Install-Font {
     process {
         # If the given path is a directory, install all fonts in the directory.
         if (Test-Path -Path $FontPath -PathType Container) {
-            Write-Verbose "Installing fonts in directory: $FontPath"
             $Include = ('*.fon','*.otf','*.ttc','*.ttf')
-            Get-ChildItem -Path $FontPath -Include $Include -Recurse | ForEach-Object {
+            $fileList = Get-ChildItem -Path $FontPath -Include $Include -Recurse
+            $total = $fileList.Length
+            $count = 0
+
+            Write-Verbose "Installing fonts in directory: $FontPath"
+
+            $fileList | ForEach-Object {
+                $count++
+                $percentComplete = [math]::Round(($count / $total) * 100, 0)
+                Write-Progress -Activity "Installing fonts..." -Status "Processing $($_.Name)" -PercentComplete $percentComplete
                 If (-not(Test-Path "C:\Windows\Fonts\$($_.Name)")) {
                     Write-Verbose "Installing font: $($_.FullName)"
                     $Destination.CopyHere($_.FullName, 0x10)
