@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-<!-- Enter a synopsis -->
+A more modularized approach to my PowerShell profile.
 
 ## Description
 
@@ -20,21 +20,19 @@
 
 ### Installation
 
-```powershell
-# how to install PSProfile
-
-```
-
-### Quick start
-
-#### Example1
+Right now, installation is clone the repository and copy the files to your profile
+directory, or create symbolic links to the files in your profile directory.
 
 ```powershell
-# command showing how to use your project
+# Clone the repository
+git clone https://github.com/jpbruckler/PSProfile.git
 
+cd PSProfile
+
+# Copy the files to your profile directory
+Copy-Item -Path .\src\PSProfile* -Destination "$HOME\Documents\PowerSHell" -Recurse -Force
 ```
 
 ## Author
 
 John Bruckler
-
