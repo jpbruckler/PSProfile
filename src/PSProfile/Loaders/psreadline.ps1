@@ -48,7 +48,7 @@ $GitCommitScript = {
     git push origin HEAD
 
     Write-Host "Commit and push completed successfully." -ForegroundColor Green
-    return
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
 }
 
 # Register PSReadline key binding for the scriptblock
