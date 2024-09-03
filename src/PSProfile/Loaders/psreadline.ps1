@@ -42,6 +42,7 @@ $GitCommitScript = {
     $additionalDetails = Read-Host "Add a detailed description or footer (leave blank to skip):"
 
     # Commit and push
+    Write-Host 'Committing and pushing changes...' -ForegroundColor Yellow
     git add .
     git commit -m "`"$fullCommitMessage`"" -m "`"$additionalDetails`""
     git push origin HEAD
