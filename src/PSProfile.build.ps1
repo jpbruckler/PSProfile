@@ -47,7 +47,7 @@ function Test-ManifestBool ($Path) {
 
 #Default Build
 $str = @()
-$str = 'Clean', 'ValidateRequirements', 'ImportModuleManifest'
+$str += 'Clean'
 $str += 'FormattingCheck'
 $str += 'Analyze', 'Test'
 $str += 'CreateHelpStart'
@@ -73,21 +73,12 @@ Enter-Build {
     $script:ModuleSourcePath = Join-Path -Path $BuildRoot -ChildPath $script:ModuleName
     $script:ModuleFiles = Join-Path -Path $script:ModuleSourcePath -ChildPath '*'
 
-    $script:ModuleManifestFile = Join-Path -Path $script:ModuleSourcePath -ChildPath "$($script:ModuleName).psd1"
-
-    $manifestInfo = Import-PowerShellDataFile -Path $script:ModuleManifestFile
-    $script:ModuleVersion = $manifestInfo.ModuleVersion
-    $script:ModuleDescription = $manifestInfo.Description
-    $script:FunctionsToExport = $manifestInfo.FunctionsToExport
-
     $script:TestsPath = Join-Path -Path $BuildRoot -ChildPath 'Tests'
     $script:UnitTestsPath = Join-Path -Path $script:TestsPath -ChildPath 'Unit'
     $script:IntegrationTestsPath = Join-Path -Path $script:TestsPath -ChildPath 'Integration'
 
     $script:ArtifactsPath = Join-Path -Path $BuildRoot -ChildPath 'Artifacts'
     $script:ArchivePath = Join-Path -Path $BuildRoot -ChildPath 'Archive'
-
-    $script:BuildModuleRootFile = Join-Path -Path $script:ArtifactsPath -ChildPath "$($script:ModuleName).psm1"
 
     # Ensure our builds fail until if below a minimum defined code test coverage threshold
     $script:coverageThreshold = 30
@@ -107,8 +98,6 @@ Set-BuildHeader {
     Write-Build DarkGray "Task $Path : $(Get-BuildSynopsis $Task)"
     # task location in a script
     Write-Build DarkGray "At $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
-    Write-Build Yellow "Manifest File: $script:ModuleManifestFile"
-    Write-Build Yellow "Manifest Version: $($manifestInfo.ModuleVersion)"
 } #Set-BuildHeader
 
 # Define footers similar to default but change the color to DarkGray.
@@ -119,33 +108,6 @@ Set-BuildFooter {
     # Write-Build Gray ('=' * 79)
 } #Set-BuildFooter
 
-#Synopsis: Validate system requirements are met
-Add-BuildTask ValidateRequirements {
-    # this setting comes from the *.Settings.ps1
-    Write-Build White "      Verifying at least PowerShell $script:requiredPSVersion..."
-    Assert-Build ($PSVersionTable.PSVersion -ge $script:requiredPSVersion) "At least Powershell $script:requiredPSVersion is required for this build to function properly"
-    Write-Build Green '      ...Verification Complete!'
-} #ValidateRequirements
-
-# Synopsis: Import the current module manifest file for processing
-Add-BuildTask TestModuleManifest -Before ImportModuleManifest {
-    Write-Build White '      Running module manifest tests...'
-    Assert-Build (Test-Path $script:ModuleManifestFile) 'Unable to locate the module manifest file.'
-    Assert-Build (Test-ManifestBool -Path $script:ModuleManifestFile) 'Module Manifest test did not pass verification.'
-    Write-Build Green '      ...Module Manifest Verification Complete!'
-} #f5b33218-bde4-4028-b2a1-9c206f089503
-
-# Synopsis: Load the module project
-Add-BuildTask ImportModuleManifest {
-    Write-Build White '      Attempting to load the project module.'
-    try {
-        Import-Module $script:ModuleManifestFile -Force -PassThru -ErrorAction Stop
-    }
-    catch {
-        throw 'Unable to load the project module'
-    }
-    Write-Build Green "      ...$script:ModuleName imported successfully"
-}
 
 #Synopsis: Clean and reset Artifacts/Archive Directory
 Add-BuildTask Clean {
@@ -232,7 +194,7 @@ Add-BuildTask FormattingCheck {
 
 #Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists)
 Add-BuildTask Test {
-
+    Write-Build White "`tCODE COVERAGE SOURCE PATH:  $script:ModuleSourcePath"
     Write-Build White "      Importing desired Pester version. Min: $script:MinPesterVersion Max: $script:MaxPesterVersion"
     Remove-Module -Name Pester -Force -ErrorAction SilentlyContinue # there are instances where some containers have Pester already in the session
     Import-Module -Name Pester -MinimumVersion $script:MinPesterVersion -MaximumVersion $script:MaxPesterVersion -ErrorAction 'Stop'
@@ -251,7 +213,7 @@ Add-BuildTask Test {
         $pesterConfiguration.Run.PassThru = $true
         $pesterConfiguration.Run.Exit = $false
         $pesterConfiguration.CodeCoverage.Enabled = $true
-        $pesterConfiguration.CodeCoverage.Path = "..\..\..\$ModuleName\*\*.ps1"
+        $pesterConfiguration.CodeCoverage.Path = "$script:ModuleSourcePath\Functions\*.ps1"
         $pesterConfiguration.CodeCoverage.CoveragePercentTarget = $script:coverageThreshold
         $pesterConfiguration.CodeCoverage.OutputPath = "$codeCovPath\CodeCoverage.xml"
         $pesterConfiguration.CodeCoverage.OutputFormat = 'JaCoCo'
@@ -557,4 +519,3 @@ Add-BuildTask Archive {
 
     Write-Build Green '        ...Archive Complete!'
 } #Archive
-
