@@ -12,6 +12,9 @@ on:
       - '**.md'
       - 'docs/**'
   push:
+    branches-ignore:
+      - 'master'
+      - 'develop'
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -52,4 +55,3 @@ jobs:
         name: zip-archive
         path: .\src\Archive
         if-no-files-found: warn
-

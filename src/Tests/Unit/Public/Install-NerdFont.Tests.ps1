@@ -6,8 +6,9 @@ Describe 'Install-NerdFont' {
 
     # BeforeAll block for setting up common mocks
     BeforeAll {
-        $fnDir = [System.IO.Path]::Combine('..', '..', 'PSProfile')
-        . (Resolve-Path (Join-Path -Path $fnDir -ChildPath 'src\PSProfile\profile\functions\Install-NerdFont.ps1')).Path
+        $verb = 'Install'
+        $fnDir = (Resolve-Path ([System.IO.Path]::Combine('..', '..', 'PSProfile','src','PSProfile','Functions'))).Path
+        . (Resolve-Path (Join-Path -Path $fnDir -ChildPath "$verb\Install-NerdFont.ps1")).Path
 
         # Mock external dependencies
         Mock -CommandName Invoke-RestMethod -MockWith {
