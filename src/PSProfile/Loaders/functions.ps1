@@ -6,6 +6,8 @@
     loaded by $env:USERPROFILE\Documents\PowerShell\profile.ps1
 #>
 
-Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'functions') -Filter '*.ps1' | ForEach-Object {
+$fxRoot = Join-Path -Path ($PROFILE | Split-Path -Parent) -ChildPath 'Functions'
+
+Get-ChildItem -Path $fxRoot -Filter '*.ps1' -File -Recurse | ForEach-Object {
     . $_.FullName
 }

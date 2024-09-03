@@ -1,2 +1,2 @@
 # Starship
-Invoke-Expression (& $(Get-Command starship | Select-Object -ExpandProperty Source) init powershell --print-full-init | Out-String)
+Invoke-Expression (&starship init powershell)
