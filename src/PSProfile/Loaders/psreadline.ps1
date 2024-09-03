@@ -48,6 +48,7 @@ $GitCommitScript = {
     git push origin HEAD
 
     Write-Host "Commit and push completed successfully." -ForegroundColor Green
+    return
 }
 
 # Register PSReadline key binding for the scriptblock
