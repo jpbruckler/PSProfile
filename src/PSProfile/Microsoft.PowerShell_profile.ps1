@@ -3,7 +3,7 @@
 # --------------------------------------
 # Current user, current host profile
 # --------------------------------------
-$env:PSPROFILE_DEBUG = $true
+$env:PSPROFILE_DEBUG = $false
 $src = Join-Path -Path ($PROFILE | Split-Path -Parent) -ChildPath 'Loaders'
 $perf = @()
 $loaders = @(
@@ -29,7 +29,7 @@ foreach ($loader in $loaders) {
     }
 }
 
-if ($env:PSPROFILE_DEBUG) {
+if ($env:PSPROFILE_DEBUG -eq $true) {
     $TotalMS = ($perf | Measure-Object -Property LoadTimeMS -Sum).Sum
     Write-Debug -Message "Importing PSProfile loaders took ${TotalMS}ms" -Debug
     Write-Debug -Message "Loaders performance:"             -Debug
