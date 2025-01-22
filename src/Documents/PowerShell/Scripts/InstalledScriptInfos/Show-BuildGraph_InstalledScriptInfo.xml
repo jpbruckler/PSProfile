@@ -1,0 +1,133 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">Show-BuildGraph</S>
+      <S N="Version">1.0.9</S>
+      <S N="Type">Script</S>
+      <S N="Description">Requirements:_x000A_- Invoke-Build command is available for calls_x000A_- Internet connection for using online viz-standalone.js_x000A_- or viz-standalone.js in the path, https://github.com/mdaines/viz.js_x000A_- or, when -Dot, dot in $env:Graphviz or in the path, http://graphviz.org_x000A__x000A_The script calls Invoke-Build to get the build tasks, makes the DOT graph,_x000A_and uses either Viz.js or dot in order to convert the graph for show._x000A__x000A_Tasks without code are shown as ovals, conditional and incremental tasks as_x000A_notes, other tasks as boxes. Safe references are shown as dotted edges,_x000A_normal references as solid edges. Job numbers are not shown by default._x000A__x000A_EXAMPLES_x000A__x000A_# Make and show HTML using viz-standalone.js (local or online)_x000A_Show-BuildGraph_x000A__x000A_# Make and show SVG using dot_x000A_Show-BuildGraph -Dot_x000A__x000A_# Make Build.png with job numbers and top to bottom edges_x000A_Show-BuildGraph -Dot -Number -NoShow -Code "" -Output Build.png</S>
+      <S N="Author">Roman Kuzmin</S>
+      <S N="CompanyName">nightroman</S>
+      <S N="Copyright">(c) Roman Kuzmin</S>
+      <DT N="PublishedDate">2024-11-20T14:30:58-05:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2024-12-22T02:43:40.3854436-05:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">http://www.apache.org/licenses/LICENSE-2.0</URI>
+      <URI N="ProjectUri">https://github.com/nightroman/Invoke-Build</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>Invoke-Build</S>
+          <S>Graphviz</S>
+          <S>PSScript</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST>
+                <S>escape_text</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="2" />
+              <LST>
+                <S>escape_text</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <Nil N="ReleaseNotes" />
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="2" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2/items/psscript</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="9">
+        <TN RefId="4">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) Roman Kuzmin</S>
+          <S N="description">Requirements:_x000A_- Invoke-Build command is available for calls_x000A_- Internet connection for using online viz-standalone.js_x000A_- or viz-standalone.js in the path, https://github.com/mdaines/viz.js_x000A_- or, when -Dot, dot in $env:Graphviz or in the path, http://graphviz.org_x000A__x000A_The script calls Invoke-Build to get the build tasks, makes the DOT graph,_x000A_and uses either Viz.js or dot in order to convert the graph for show._x000A__x000A_Tasks without code are shown as ovals, conditional and incremental tasks as_x000A_notes, other tasks as boxes. Safe references are shown as dotted edges,_x000A_normal references as solid edges. Job numbers are not shown by default._x000A__x000A_EXAMPLES_x000A__x000A_# Make and show HTML using viz-standalone.js (local or online)_x000A_Show-BuildGraph_x000A__x000A_# Make and show SVG using dot_x000A_Show-BuildGraph -Dot_x000A__x000A_# Make Build.png with job numbers and top to bottom edges_x000A_Show-BuildGraph -Dot -Number -NoShow -Code "" -Output Build.png</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">16</S>
+          <S N="downloadCount">121</S>
+          <S N="packageSize">5330</S>
+          <S N="published">11/20/2024 2:30:58 PM -05:00</S>
+          <S N="created">11/20/2024 2:30:58 PM -05:00</S>
+          <S N="lastUpdated">12/20/2024 12:30:00 PM -05:00</S>
+          <S N="tags">Invoke-Build  Graphviz PSScript PSFunction_escape_text PSCommand_escape_text PSIncludes_Function</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2024-12-20T12:30:00Z</S>
+          <S N="NormalizedVersion">1.0.9</S>
+          <S N="Authors">Roman Kuzmin</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Script</S>
+          <S N="FileList">Show-BuildGraph.nuspec|Show-BuildGraph.ps1</S>
+          <S N="GUID">43d94ab6-d0c5-4c6a-839d-2ace0449bf56</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\John\Documents\PowerShell\Scripts</S>
+    </MS>
+  </Obj>
+</Objs>
