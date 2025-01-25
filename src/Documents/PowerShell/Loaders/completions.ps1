@@ -3,7 +3,7 @@ using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
 #region custom completions
-Register-ArgumentCompleter -CommandName Set-GitDirectoryLocation -ParameterName Path -ScriptBlock {
+Register-ArgumentCompleter -CommandName Set-GitDirectoryLocation,cdg -ParameterName Path -ScriptBlock {
     param(
         $commandName,
         $parameterName,
@@ -12,18 +12,32 @@ Register-ArgumentCompleter -CommandName Set-GitDirectoryLocation -ParameterName 
         $fakeBoundParameters
     )
 
-    $paths = Get-ChildItem -Path $env:LOCAL_GIT_FOLDER -Directory -Recurse |
-        Where-Object { $_.Name -like "*$wordToComplete*" }
+    if ($wordToComplete -match '\\') {
+        $parts = $wordToComplete -split '\\'
+        if ($parts.Count -gt 1) {
+            $stub = $parts[0..-2] -join '\'
+        } else {
+            $stub = $parts[0]
+        }
+        $srcPath = Join-Path -Path $env:LOCAL_GIT_FOLDER -ChildPath $stub
+    }
+    else {
+        $srcPath = $env:LOCAL_GIT_FOLDER
+    }
+
+    $paths = Get-ChildItem -Path $srcPath -Directory |
+        Where-Object { $_.FullName -like "*$wordToComplete*" }
 
     $paths | ForEach-Object {
         [System.Management.Automation.CompletionResult]::new(
-            $_.FullName,        # completion text - what's sent to the command
-            $_.Name,            # list item text - what's displayed in the list
-            'ParameterValue',   # result type - parameter value
-            $_.Name             # tool tip - additional information
+            ($_.FullName -replace [regex]::Escape($env:LOCAL_GIT_FOLDER),'').TrimEnd('\'),  # completion text - what's sent to the command
+            ($_.FullName -replace [regex]::Escape($env:LOCAL_GIT_FOLDER),''),               # list item text - what's displayed in the list
+            'ParameterValue',                                                               # result type - parameter value
+            $_.Name                                                                         # tool tip - additional information
         )
     }
 }
+
 #endregion
 
 #region starship completions
