@@ -2,6 +2,31 @@
 using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
+#region custom completions
+Register-ArgumentCompleter -CommandName Set-GitDirectoryLocation -ParameterName Path -ScriptBlock {
+    param(
+        $commandName,
+        $parameterName,
+        $wordToComplete,
+        $commandAst,
+        $fakeBoundParameters
+    )
+
+    $paths = Get-ChildItem -Path $env:LOCAL_GIT_FOLDER -Directory -Recurse |
+        Where-Object { $_.Name -like "*$wordToComplete*" }
+
+    $paths | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new(
+            $_.FullName,        # completion text - what's sent to the command
+            $_.Name,            # list item text - what's displayed in the list
+            'ParameterValue',   # result type - parameter value
+            $_.Name             # tool tip - additional information
+        )
+    }
+}
+#endregion
+
+#region starship completions
 Register-ArgumentCompleter -Native -CommandName 'starship' -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
 
@@ -242,3 +267,4 @@ Register-ArgumentCompleter -Native -CommandName 'starship' -ScriptBlock {
     $completions.Where{ $_.CompletionText -like "$wordToComplete*" } |
         Sort-Object -Property ListItemText
 }
+#endregion

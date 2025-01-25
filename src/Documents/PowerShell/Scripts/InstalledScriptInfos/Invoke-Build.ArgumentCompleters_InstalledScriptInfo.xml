@@ -1,0 +1,124 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">Invoke-Build.ArgumentCompleters</S>
+      <S N="Version">1.0.4</S>
+      <S N="Type">Script</S>
+      <S N="Description">The script registers Invoke-Build completers for parameters Task and File._x000A__x000A_Completers can be used with:_x000A__x000A_* PowerShell v5 native Register-ArgumentCompleter_x000A_Simply invoke Invoke-Build.ArgumentCompleters.ps1, e.g. in a profile._x000A__x000A_* TabExpansion2.ps1 https://www.powershellgallery.com/packages/TabExpansion2_x000A_Put Invoke-Build.ArgumentCompleters.ps1 to the path in order to be loaded_x000A_automatically on the first completion. Or invoke after TabExpansion2.ps1,_x000A_e.g. in a profile.</S>
+      <S N="Author">Roman Kuzmin</S>
+      <S N="CompanyName">nightroman</S>
+      <S N="Copyright">(c) Roman Kuzmin</S>
+      <DT N="PublishedDate">2020-11-22T07:02:00-05:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2024-12-22T12:36:16.4837931-05:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">http://www.apache.org/licenses/LICENSE-2.0</URI>
+      <URI N="ProjectUri">https://github.com/nightroman/Invoke-Build</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>Invoke-Build</S>
+          <S>TabExpansion2</S>
+          <S>Register-ArgumentCompleter</S>
+          <S>PSScript</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <Nil N="ReleaseNotes" />
+      <Obj N="Dependencies" RefId="6">
+        <TNRef RefId="2" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2/items/psscript</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="7">
+        <TN RefId="4">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) Roman Kuzmin</S>
+          <S N="description">The script registers Invoke-Build completers for parameters Task and File._x000A__x000A_Completers can be used with:_x000A__x000A_* PowerShell v5 native Register-ArgumentCompleter_x000A_Simply invoke Invoke-Build.ArgumentCompleters.ps1, e.g. in a profile._x000A__x000A_* TabExpansion2.ps1 https://www.powershellgallery.com/packages/TabExpansion2_x000A_Put Invoke-Build.ArgumentCompleters.ps1 to the path in order to be loaded_x000A_automatically on the first completion. Or invoke after TabExpansion2.ps1,_x000A_e.g. in a profile.</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">2216</S>
+          <S N="downloadCount">8572</S>
+          <S N="packageSize">3202</S>
+          <S N="published">11/22/2020 7:02:00 AM -05:00</S>
+          <S N="created">11/22/2020 7:02:00 AM -05:00</S>
+          <S N="lastUpdated">12/20/2024 12:30:00 PM -05:00</S>
+          <S N="tags">Invoke-Build  TabExpansion2 Register-ArgumentCompleter PSScript</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2024-12-20T12:30:00Z</S>
+          <S N="NormalizedVersion">1.0.4</S>
+          <S N="Authors">Roman Kuzmin</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Script</S>
+          <S N="FileList">Invoke-Build.ArgumentCompleters.nuspec|Invoke-Build.ArgumentCompleters.ps1</S>
+          <S N="GUID">78b68f80-80c5-4cc1-9ded-e2ae165a9cbd</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\John\Documents\PowerShell\Scripts</S>
+    </MS>
+  </Obj>
+</Objs>
